@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -5,11 +6,17 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-rl.question('Welcome to Holberton School, what is your name?\n', (name) => {
-  console.log(`Your name is: ${name}`);
-  rl.close();
-});
+const question = promisify(rl.question).bind(rl);
 
-rl.on('close', () => {
-  console.log('This important software is now closing');
-});
+(async () => {
+  try {
+    console.log('Welcome to Holberton School, what is your name?');
+    const name = await question('');
+    console.log(`Your name is: ${name}`);
+  } catch (error) {
+    console.error('An error occurred:', error);
+  } finally {
+    console.log('This important software is now closing');
+    rl.close();
+  }
+})();
