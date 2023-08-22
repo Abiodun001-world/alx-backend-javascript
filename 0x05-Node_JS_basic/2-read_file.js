@@ -1,36 +1,41 @@
-// 2-read_file.js
-
 const fs = require('fs');
 
-function countStudents(path) {
+function countStudents(abbey) {
+  let content;
+
   try {
-    const data = fs.readFileSync(path, 'utf8');
-    const lines = data.split('\n');
-    const students = {};
+    content = fs.readFileSync(abbey);
+  } catch (err) {
+    throw new Error('Cannot load the database');
+  }
 
-    for (const line of lines) {
-      if (line.trim() !== '') {
-        const [, , , field] = line.split(','); // Ignore unused variables
-        if (!students[field]) {
-          students[field] = [];
-        }
-        students[field].push(line.split(',')[0]); // Use firstname only
-      }
+  content = content.toString().split('\n');
+
+  let students = content.filter((item) => item);
+
+  students = students.map((item) => item.split(','));
+
+  const NUMBER_OF_STUDENTS = students.length ? students.length - 1 : 0;
+  console.log(`Number of students: ${NUMBER_OF_STUDENTS}`);
+
+  const fieldsAbbey = {};
+  for (const i in students) {
+    if (i !== 0) {
+      if (!fieldsAbbey[students[i][3]]) fieldsAbbey[students[i][3]] = [];
+
+      fieldsAbbey[students[i][3]].push(students[i][0]);
     }
+  }
 
-    console.log(`Number of students: ${lines.length - 1}`);
+  delete fieldsAbbey.field;
 
-    for (const field in students) {
-      if (Object.prototype.hasOwnProperty.call(students, field)) {
-        console.log(`Number of students in ${field}: ${students[field].length}. List: ${students[field].join(', ')}`);
-      }
-    }
-  } catch (error) {
-    console.error('Cannot load the database');
+  for (const key of Object.keys(fieldsAbbey)) {
+    console.log(
+      `Number of students in ${key}: ${fieldsAbbey[key].length}. List: ${fieldsAbbey[
+        key
+      ].join(', ')}`,
+    );
   }
 }
 
 module.exports = countStudents;
-
-// Uncomment the line below to run the function with the specified path
-// countStudents('database.csv');
