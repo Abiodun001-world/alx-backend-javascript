@@ -1,22 +1,14 @@
-const { promisify } = require('util');
-const readline = require('readline');
+process.stdout.write('Welcome to Holberton School, what is your name?\n');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('readable', () => {
+  const abiodun = process.stdin.read();
+  if (abiodun !== null) {
+    process.stdout.write(`Your name is: ${abiodun}`);
+  }
 });
 
-const question = promisify(rl.question).bind(rl);
-
-(async () => {
-  try {
-    console.log('Welcome to Holberton School, what is your name?');
-    const name = await question('');
-    console.log(`Your name is: ${name}`);
-  } catch (error) {
-    console.error('An error occurred:', error);
-  } finally {
-    console.log('This important software is now closing');
-    rl.close();
-  }
-})();
+process.stdin.on('end', () => {
+  process.stdout.write('This important software is now closing\n');
+});
