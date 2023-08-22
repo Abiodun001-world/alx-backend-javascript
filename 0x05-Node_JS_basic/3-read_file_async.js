@@ -1,37 +1,48 @@
-// 3-read_file_async.js
-
 const fs = require('fs');
 
 function countStudents(path) {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (error, data) => {
-      if (error) {
-        reject(new Error('Cannot load the database'));
+    fs.readFile(path, 'utf8', (err, data) => {
+      if (err) {
+        reject(Error('Cannot load the database'));
         return;
       }
+      const response = [];
+      let msg;
 
-      const lines = data.split('\n');
-      const students = {};
+      const content = data.toString().split('\n');
 
-      for (const line of lines) {
-        if (line.trim() !== '') {
-          const [, , , field] = line.split(','); // Ignore unused variables
-          if (!students[field]) {
-            students[field] = [];
-          }
-          students[field].push(line.split(',')[0]); // Use firstname only
+      let students = content.filter((item) => item);
+
+      students = students.map((item) => item.split(','));
+
+      const NUMBER_OF_STUDENTS = students.length ? students.length - 1 : 0;
+      msg = `Number of students: ${NUMBER_OF_STUDENTS}`;
+      console.log(msg);
+
+      response.push(msg);
+
+      const fieldsAbbey = {};
+      for (const i in students) {
+        if (i !== 0) {
+          if (!fieldsAbbey[students[i][3]]) fieldsAbbey[students[i][3]] = [];
+
+          fieldsAbbey[students[i][3]].push(students[i][0]);
         }
       }
 
-      console.log(`Number of students: ${lines.length - 1}`);
+      delete fieldsAbbey.field;
 
-      for (const field in students) {
-        if (Object.prototype.hasOwnProperty.call(students, field)) {
-          console.log(`Number of students in ${field}: ${students[field].length}. List: ${students[field].join(', ')}`);
-        }
+      for (const key of Object.keys(fieldsAbbey)) {
+        msg = `Number of students in ${key}: ${
+          fieldsAbbey[key].length
+        }. List: ${fieldsAbbey[key].join(', ')}`;
+
+        console.log(msg);
+
+        response.push(msg);
       }
-
-      resolve();
+      resolve(response);
     });
   });
 }
