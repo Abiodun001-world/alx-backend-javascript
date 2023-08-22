@@ -1,30 +1,29 @@
-// 7-http_express.js
-
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+
+const args = process.argv.slice(2);
 const countStudents = require('./3-read_file_async');
 
+const DATABASE = args[0];
+
 const app = express();
+const port = 1245;
 
 app.get('/', (req, res) => {
-  res.send('Hello Holberton School!\n');
+  res.send('Hello Holberton School!');
 });
 
-app.get('/students', (req, res) => {
-  const filePath = path.join(__dirname, 'database.csv');
-  countStudents(filePath)
-    .then(() => {
-      const readStream = fs.createReadStream(filePath);
-      readStream.pipe(res);
-    })
-    .catch((error) => {
-      res.send(error.message);
-    });
+app.get('/students', async (req, res) => {
+  const msg = 'This is the list of our students\n';
+  try {
+    const students = await countStudents(DATABASE);
+    res.send(`${msg}${students.join('\n')}`);
+  } catch (error) {
+    res.send(`${msg}${error.message}`);
+  }
 });
 
-app.listen(1245, () => {
-  console.log('Server is listening on port 1245');
+app.listen(port, () => {
+  //   console.log(`Example app listening at http://localhost:${port}`);
 });
 
 module.exports = app;
