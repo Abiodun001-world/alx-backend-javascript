@@ -1,15 +1,15 @@
 // full_server/server.js
 
 import express from 'express';
-import router from './routes/index'; // Include the correct path to the routes directory
+import controller from './routes/index';
 
 const app = express();
 const port = 1245;
 
-app.use('/', router);
+controller(app);
 
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+  //   console.log(`Example app listening at http://localhost:${port}`);
 });
 
 export default app;
